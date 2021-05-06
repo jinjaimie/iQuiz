@@ -55,7 +55,7 @@
                                 <rect key="frame" x="0.0" y="39" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
-                                    <barButtonItem title="Setting" id="l4m-Ga-iIu">
+                                    <barButtonItem title="Settings" id="l4m-Ga-iIu">
                                         <connections>
                                             <action selector="setting:" destination="BYZ-38-t0r" id="jj2-Av-x2l"/>
                                         </connections>
