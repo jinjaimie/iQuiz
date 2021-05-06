@@ -8,9 +8,9 @@ Basic interaction
 - we need a TableView for the quizzes
 - each element will lead the user to a list of questions
 - so we start with the TableView filled with subjects
- - use Mathematics, Marvel Super Heroes, and Science
- - for now, use an in-memory array
- - make sure to build this as a UITableViewSource
+  - use Mathematics, Marvel Super Heroes, and Science
+  - for now, use an in-memory array
+  - make sure to build this as a UITableViewSource
  
 
 TableView cells
