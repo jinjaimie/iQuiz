@@ -63,16 +63,23 @@ class TableData: NSObject, UITableViewDataSource {
     }
 }
 
-class ViewController: UIViewController, UITableViewDelegate {
+class SubjectSelector: NSObject, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
+     NSLog("You selected cell #\(didSelectRowAt.row)!")
+    }
+}
+
+class ViewController: UIViewController {
     
     let subjectData = TableData()
+    let selector = SubjectSelector()
     
-    @IBOutlet weak var subjectTable: UITableView!
+    @IBOutlet var subjectTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         subjectTable.dataSource = subjectData
-        subjectTable.delegate = self
+        subjectTable.delegate = selector
     }
     
     @IBAction func setting(_ sender: Any) {
@@ -85,10 +92,6 @@ class ViewController: UIViewController, UITableViewDelegate {
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true, completion: nil)
-    }
-    
-    private func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-     NSLog("You selected cell #\(indexPath.row)!")
     }
 
 }
