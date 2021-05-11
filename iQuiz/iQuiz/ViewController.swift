@@ -10,16 +10,19 @@ import UIKit
 class Subject {
     var title: String
     var descrip: String
-    var image: UIImage = UIImage(named: "folder")!
+    var image: UIImage?
     var questions: [Question] = []
     
     
     init(subj: String, desc: String, img: UIImage?, question: Question?) {
         title = subj
         descrip = desc
-        image = img!
+        
         if (question != nil) {
             questions.append(question!)
+        }
+        if (image != nil) {
+            image = img!
         }
     }
 }
@@ -51,7 +54,6 @@ class TableData: NSObject, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        NSLog("Cell")
         let cell = tableView.dequeueReusableCell(withIdentifier: TableData.CELL_NAME, for: indexPath)
         cell.textLabel?.text = TableData.data[indexPath.row].title
         cell.detailTextLabel?.text = TableData.data[indexPath.row].descrip
@@ -61,7 +63,7 @@ class TableData: NSObject, UITableViewDataSource {
     }
 }
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate {
     
     let subjectData = TableData()
     
@@ -70,6 +72,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         subjectTable.dataSource = subjectData
+        subjectTable.delegate = self
     }
     
     @IBAction func setting(_ sender: Any) {
@@ -84,7 +87,9 @@ class ViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
-
+    private func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+     NSLog("You selected cell #\(indexPath.row)!")
+    }
 
 }
 
