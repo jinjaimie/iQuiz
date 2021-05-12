@@ -123,17 +123,17 @@ class ViewController: UIViewController {
             answer!.view.frame = view.frame
             button.setTitle("Next", for: .normal)
             switchViewController(question, to: answer)
-            if (question?.selectedButton?.titleLabel?.text == TableData.selected![curr].achoice) {
+            if (question?.selectedButton?.titleLabel?.text == TableData.selected![curr - 1].achoice) {
                 score += 1
                 NSLog("score");
                 answer!.changeData("Correct!")
             } else {
-                answer!.changeData("Incorrect. The correct answer is \(TableData.selected![curr].achoice)")
+                answer!.changeData("Incorrect. The correct answer is \(TableData.selected![curr - 1].achoice)")
             }
         }
         else {
             UIView.setAnimationTransition(.flipFromLeft, for: view, cache: true)
-            if (TableData.selected!.count - 1 == curr) {
+            if (TableData.selected!.count == curr) {
                 finish!.view.frame = view.frame
                 button.isHidden = true;
                 switchViewController(answer, to: finish)
@@ -142,7 +142,6 @@ class ViewController: UIViewController {
                 question!.view.frame = view.frame
                 button.setTitle("Submit", for: .normal)
                 switchViewController(answer, to: question)
-                curr += 1
             }
         }
         UIView.commitAnimations()
@@ -161,6 +160,7 @@ class ViewController: UIViewController {
                 to!.didMove(toParent: self)
                 if (to == question) {
                     question!.changeData(TableData.selected![curr])
+                    curr += 1
                 } else if (to == finish && finish != nil) {
                         finish!.changeData("\(String(score)) out of \(String(TableData.selected!.count))")
                 }

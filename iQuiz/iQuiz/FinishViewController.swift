@@ -28,7 +28,7 @@ class FinishViewController: UIViewController {
     }
     
     func changeLabel() {
-        label.text = "Nice you got \(data!)"
+        label.text = "Oh wow! You got \(data!)"
     }
     
     func changeData(_ new: String){

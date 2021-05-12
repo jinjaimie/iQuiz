@@ -22,7 +22,10 @@ class QuestionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        for op in options {
+            op.backgroundColor = UIColor.white
+        }
+        selectedButton = nil
         // Do any additional setup after loading the view.
     }
     
@@ -42,6 +45,10 @@ class QuestionViewController: UIViewController {
     }
     
     func changeData(_ new: Question) {
+        for op in options {
+            op.backgroundColor = UIColor.white
+        }
+        selectedButton = nil
         data = new
         changeLabel()
     }
