@@ -63,6 +63,11 @@ class ViewController: UIViewController {
         //NSLog("\(UserDefaults.standard.string(forKey: "questionurl_preference")!)")
         // HTTP PULL & SAVE
         getQuestions()
+        if (TableData.data.count == 0) {
+            NSLog("here")
+            let jsonData = UserDefaults.standard.object(forKey: "questionitem_preference") as! Data
+            TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
+        }
         if (subjectTable != nil) {
         subjectTable.dataSource = subjectData
         subjectTable.delegate = selector
@@ -182,30 +187,29 @@ class ViewController: UIViewController {
     
     fileprivate func getQuestions() {
         if let url = URL.init(string: urlString) {
-            let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, err) in
-                var responseData: HTTPURLResponse? = nil;
-                if response != nil {
-                    responseData = response! as! HTTPURLResponse
-                }
-                if err != nil || data == nil || (responseData != nil && responseData!.statusCode != 200) {
+            
+            let task = URLSession.shared.dataTask(with: url,
+                                                  completionHandler:{ (data, response, err) in
+                if err != nil || data == nil {
                     //pop up error alert
+                    self.showError()
                     let jsonData = UserDefaults.standard.object(forKey: "questionitem_preference") as! Data
                     TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
                 } else {
-                    NSLog("response: \(response!)")
                     if let responseText = String.init(data: data!, encoding: .ascii) {
                         let jsonData = responseText.data(using: .utf8)!
-                        TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
+                        let info = try! JSONDecoder().decode([Subject].self, from: jsonData)
                         UserDefaults.standard.set(jsonData, forKey: "questionitem_preference")
+                        TableData.data = info
                     }
                 }
             })
-            task.resume()
             
+            task.resume()
         }
     }
     
-    fileprivate func error() {
+    fileprivate func showError() {
         let alertController = UIAlertController(title: "Uh-Oh! Something went wrong", message: "Please check your url and make sure the Network Unavailable", preferredStyle: .alert)
         
         let confirmAction = UIAlertAction(title: "Enter", style: .default) { (_) in
