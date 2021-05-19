@@ -7,47 +7,21 @@
 
 import UIKit
 
-class Subject {
+struct Subject: Codable {
     var title: String
-    var descrip: String
-    var image: UIImage?
+    var desc: String
     var questions: [Question] = []
-    
-    
-    init(subj: String, desc: String, img: UIImage?, question: [Question]?) {
-        title = subj
-        descrip = desc
-        
-        if (question != nil) {
-            questions = question!
-        }
-        if (image != nil) {
-            image = img!
-        }
-    }
 }
 
-class Question {
-    var q: String
-    var c1: String
-    var c2: String
-    var c3: String
-    var achoice: String
-    
-    init(question: String, answer: String, option1: String, option2: String, option3: String) {
-        q = question
-        achoice = answer
-        c1 = option1
-        c2 = option2
-        c3 = option3
-    }
+struct Question: Codable {
+    var text: String
+    var answers: [String]
+    var answer: String
+
 }
 
 class TableData: NSObject, UITableViewDataSource {
-    static let data: [Subject] = [
-        Subject(subj: "Mathematics", desc: "Test your math knowledge with this witty quiz", img: nil, question: [Question(question: "What is the first Question for Math?", answer: "Option 1", option1: "Option 2", option2: "Option 3", option3: "Option 4")]),
-        Subject(subj: "Marvel Super Heroes", desc: "Marvel fans, quiz yourself with out of the box questions!", img: nil, question: [Question(question: "What is the first Question for Marvel?", answer: "Option 1", option1: "Option 2", option2: "Option 3", option3: "Option 4"), Question(question: "What is the second Question for Marvel?", answer: "Option 2", option1: "Option 3", option2: "Option 1", option3: "Option 4")]),
-        Subject(subj: "Science", desc: "Test tubes, nature, and human bodies what do you know?", img: nil, question: [Question(question: "What is the first Question for Science?", answer: "Option 1", option1: "Option 2", option2: "Option 3", option3: "Option 4"), Question(question: "What is the second Question for Science?", answer: "Option 2", option1: "Option 3", option2: "Option 1", option3: "Option 4"), Question(question: "What is the third Question for Science?", answer: "Option 4", option1: "Option 2", option2: "Option 3", option3: "Option 1")])]
+    static var data: [Subject] = []
     static var selected: [Question]? = nil
     static let CELL_NAME = "topicCell"
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -57,7 +31,7 @@ class TableData: NSObject, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableData.CELL_NAME, for: indexPath)
         cell.textLabel?.text = TableData.data[indexPath.row].title
-        cell.detailTextLabel?.text = TableData.data[indexPath.row].descrip
+        cell.detailTextLabel?.text = TableData.data[indexPath.row].desc
         return cell
     }
 }
@@ -80,11 +54,15 @@ class ViewController: UIViewController {
     let selector = SubjectSelector()
     var curr = 0;
     var score = 0;
+    var urlString: String = UserDefaults.standard.string(forKey: "questionurl_preference") ?? "https://tednewardsandbox.site44.com/questions.json"
     
     @IBOutlet var subjectTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        //NSLog("\(UserDefaults.standard.string(forKey: "questionurl_preference")!)")
+        // HTTP PULL & SAVE
+        getQuestions()
         if (subjectTable != nil) {
         subjectTable.dataSource = subjectData
         subjectTable.delegate = selector
@@ -97,12 +75,27 @@ class ViewController: UIViewController {
     }
     
     @IBAction func setting(_ sender: Any) {
-        let alertController = UIAlertController(title: "Settings go here", message: "", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Settings", message: "", preferredStyle: .alert)
         
-        let confirmAction = UIAlertAction(title: "Ok", style: .default) { (_) in }
+        let confirmAction = UIAlertAction(title: "Enter", style: .default) { (_) in
+            self.urlString = (alertController.textFields?[0].text)!
+            UserDefaults.standard.set(self.urlString, forKey: "questionurl_preference")
+            
+            self.getQuestions()
+        }
+        
+        let checkAction = UIAlertAction(title: "Check Now", style: .default) { (_) in
+            self.getQuestions()
+        }
+        
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Enter new URL to get questions from"
+        }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+       
         alertController.addAction(confirmAction)
+        alertController.addAction(checkAction)
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true, completion: nil)
@@ -123,12 +116,11 @@ class ViewController: UIViewController {
             answer!.view.frame = view.frame
             button.setTitle("Next", for: .normal)
             switchViewController(question, to: answer)
-            if (question?.selectedButton?.titleLabel?.text == TableData.selected![curr - 1].achoice) {
+            if (question?.selectedButton?.titleLabel?.text == TableData.selected![curr - 1].answers[Int(TableData.selected![curr - 1].answer)! - 1]) {
                 score += 1
-                NSLog("score");
                 answer!.changeData("Correct!")
             } else {
-                answer!.changeData("Incorrect. The correct answer is \(TableData.selected![curr - 1].achoice)")
+                answer!.changeData("Incorrect. The correct answer is \(TableData.selected![curr - 1].answers[Int(TableData.selected![curr - 1].answer)! - 1])")
             }
         }
         else {
@@ -187,5 +179,43 @@ class ViewController: UIViewController {
             finish!.data = "\(String(score)) out of \(String(TableData.selected!.count))"
         }
     }
+    
+    fileprivate func getQuestions() {
+        if let url = URL.init(string: urlString) {
+            let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, err) in
+                var responseData: HTTPURLResponse? = nil;
+                if response != nil {
+                    responseData = response! as! HTTPURLResponse
+                }
+                if err != nil || data == nil || (responseData != nil && responseData!.statusCode != 200) {
+                    //pop up error alert
+                    let jsonData = UserDefaults.standard.object(forKey: "questionitem_preference") as! Data
+                    TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
+                } else {
+                    NSLog("response: \(response!)")
+                    if let responseText = String.init(data: data!, encoding: .ascii) {
+                        let jsonData = responseText.data(using: .utf8)!
+                        TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
+                        UserDefaults.standard.set(jsonData, forKey: "questionitem_preference")
+                    }
+                }
+            })
+            task.resume()
+            
+        }
+    }
+    
+    fileprivate func error() {
+        let alertController = UIAlertController(title: "Uh-Oh! Something went wrong", message: "Please check your url and make sure the Network Unavailable", preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "Enter", style: .default) { (_) in
+        }
+        
+       
+        alertController.addAction(confirmAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
 }
 

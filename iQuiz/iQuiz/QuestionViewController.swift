@@ -30,11 +30,10 @@ class QuestionViewController: UIViewController {
     }
     
     func changeLabel() {
-        questionLabel.text = data!.q
-        options[0].setTitle(data!.achoice, for: .normal)
-        options[1].setTitle(data!.c1, for: .normal)
-        options[2].setTitle(data!.c2, for: .normal)
-        options[3].setTitle(data!.c3, for: .normal)
+        questionLabel.text = data!.text
+        for i in 0...data!.answers.count - 1 {
+            options[i].setTitle(data!.answers[i], for: .normal)
+        }
     }
     @IBAction func selectOption(_ sender: UIButton) {
         sender.backgroundColor = UIColor.lightGray

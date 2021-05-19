@@ -16,6 +16,7 @@
 		A85B911B264B1BA000989389 /* QuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85B911A264B1BA000989389 /* QuestionViewController.swift */; };
 		A85B911E264B1BB000989389 /* AnswerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85B911D264B1BB000989389 /* AnswerViewController.swift */; };
 		A85B9121264B393700989389 /* FinishViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85B9120264B393700989389 /* FinishViewController.swift */; };
+		A85B912426546D3900989389 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A85B912326546D3800989389 /* Settings.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		A85B911A264B1BA000989389 /* QuestionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionViewController.swift; sourceTree = "<group>"; };
 		A85B911D264B1BB000989389 /* AnswerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerViewController.swift; sourceTree = "<group>"; };
 		A85B9120264B393700989389 /* FinishViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishViewController.swift; sourceTree = "<group>"; };
+		A85B912326546D3800989389 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				A85B910E2643436600989389 /* Assets.xcassets */,
 				A85B91102643436600989389 /* LaunchScreen.storyboard */,
 				A85B91132643436600989389 /* Info.plist */,
+				A85B912326546D3800989389 /* Settings.bundle */,
 			);
 			path = iQuiz;
 			sourceTree = "<group>";
@@ -133,6 +136,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A85B912426546D3900989389 /* Settings.bundle in Resources */,
 				A85B91122643436600989389 /* LaunchScreen.storyboard in Resources */,
 				A85B910F2643436600989389 /* Assets.xcassets in Resources */,
 				A85B910D2643436400989389 /* Main.storyboard in Resources */,
