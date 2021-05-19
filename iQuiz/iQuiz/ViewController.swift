@@ -61,16 +61,14 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         //NSLog("\(UserDefaults.standard.string(forKey: "questionurl_preference")!)")
+        //UserDefaults.standard.set("https://tednewardsandbox.site44.com/questions.json", forKey: "questionurl_preference")
         // HTTP PULL & SAVE
         getQuestions()
-        if (TableData.data.count == 0) {
-            NSLog("here")
-            let jsonData = UserDefaults.standard.object(forKey: "questionitem_preference") as! Data
-            TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
-        }
         if (subjectTable != nil) {
         subjectTable.dataSource = subjectData
         subjectTable.delegate = selector
+        getQuestions()
+            self.subjectTable.reloadData()
         } else {
             score = 0
             buildJ()
@@ -91,6 +89,7 @@ class ViewController: UIViewController {
         
         let checkAction = UIAlertAction(title: "Check Now", style: .default) { (_) in
             self.getQuestions()
+            self.subjectTable.reloadData()
         }
         
         alertController.addTextField { (textField) in
@@ -187,7 +186,6 @@ class ViewController: UIViewController {
     
     fileprivate func getQuestions() {
         if let url = URL.init(string: urlString) {
-            
             let task = URLSession.shared.dataTask(with: url,
                                                   completionHandler:{ (data, response, err) in
                 if err != nil || data == nil {
@@ -196,16 +194,25 @@ class ViewController: UIViewController {
                     let jsonData = UserDefaults.standard.object(forKey: "questionitem_preference") as! Data
                     TableData.data = try! JSONDecoder().decode([Subject].self, from: jsonData)
                 } else {
-                    if let responseText = String.init(data: data!, encoding: .ascii) {
-                        let jsonData = responseText.data(using: .utf8)!
-                        let info = try! JSONDecoder().decode([Subject].self, from: jsonData)
+                    do {
+                        let responseText = String.init(data: data!, encoding: .ascii)
+                        let jsonData = responseText!.data(using: .utf8)!
+                        let info = try JSONDecoder().decode([Subject].self, from: jsonData)
                         UserDefaults.standard.set(jsonData, forKey: "questionitem_preference")
                         TableData.data = info
+                    } catch {
+                        self.showError()
                     }
                 }
             })
             
             task.resume()
+            do {
+                let jsonData = UserDefaults.standard.object(forKey: "questionitem_preference") as! Data
+                TableData.data = try JSONDecoder().decode([Subject].self, from: jsonData)
+            } catch {
+                showError()
+            }
         }
     }
     
